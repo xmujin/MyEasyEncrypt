@@ -37,30 +37,45 @@ void AES::KeyExpansion(std::vector<unsigned char> &key)
     key.resize((Nr + 1) * 4 * Nk);
     assert(key.size() == 176);
 
-    int i = 4 * Nk;
+    unsigned int i = 4 * Nk;
     while(i < 4 * Nk * (Nr + 1))
     {
         if(i / Nk % 4 == 0)
         {
+            std::vector<unsigned char> temp(4);
+            temp[0] = key[i + 0 - 4 * 1];
+            temp[1] = key[i + 1 - 4 * 1];
+            temp[2] = key[i + 2 - 4 * 1];
+            temp[3] = key[i + 3 - 4 * 1];
+
             // 字循环
-            unsigned char t = key[i];
-            key[i + 0] = key[i + 1];
-            key[i + 1] = key[i + 2];
-            key[i + 2] = key[i + 3];
-            key[i + 3] = t;
+            unsigned char t = temp[0];
+            temp[0] = temp[1];
+            temp[1] = temp[2];
+            temp[2] = temp[3];
+            temp[3] = t;
+
             // 字节代换
-            key[i + 0] = _SBox[key[i + 0]];
-            key[i + 1] = _SBox[key[i + 1]];
-            key[i + 2] = _SBox[key[i + 2]];
-            key[i + 3] = _SBox[key[i + 3]];
+            temp[0] = _SBox[temp[0]];
+            temp[1] = _SBox[temp[1]];
+            temp[2] = _SBox[temp[2]];
+            temp[3] = _SBox[temp[3]];
+
+
             // 轮常量异或
-            key[i + 0] ^= _Recon128[((i / (4 * Nk)) - 1) * Nk + 0];
-            key[i + 1] ^= _Recon128[((i / (4 * Nk)) - 1) * Nk + 1];
-            key[i + 2] ^= _Recon128[((i / (4 * Nk)) - 1) * Nk + 2];
-            key[i + 3] ^= _Recon128[((i / (4 * Nk)) - 1) * Nk + 3];
+            temp[0] ^= _Recon128[((i / (4 * Nk)) - 1) * Nk + 0];
+            temp[1] ^= _Recon128[((i / (4 * Nk)) - 1) * Nk + 1];
+            temp[2] ^= _Recon128[((i / (4 * Nk)) - 1) * Nk + 2];
+            temp[3] ^= _Recon128[((i / (4 * Nk)) - 1) * Nk + 3];
+            // 最终异或w[i - 4] ^ T(w[i - 1])
+            key[i + 0] = key[i + 0 - 4 * Nk] ^ temp[0];
+            key[i + 1] = key[i + 1 - 4 * Nk] ^ temp[1];
+            key[i + 2] = key[i + 2 - 4 * Nk] ^ temp[2];
+            key[i + 3] = key[i + 3 - 4 * Nk] ^ temp[3];
         }
         else
         {
+            // w[i - 4] ^ w[i - 1]
             key[i + 0] = key[i + 0 - 4 * Nk] ^ key[i + 0 - 4 * 1];
             key[i + 1] = key[i + 1 - 4 * Nk] ^ key[i + 1 - 4 * 1];
             key[i + 2] = key[i + 2 - 4 * Nk] ^ key[i + 2 - 4 * 1];
@@ -74,7 +89,7 @@ void AES::KeyExpansion(std::vector<unsigned char> &key)
 
 unsigned char AES::xtime(const unsigned char &a)
 {
-    return (a << 1) ^ ((a >> 7) * 0x1b);
+    return (a << 1) ^ (((a >> 7) & 1) * 0x1b);
 }
 
 
@@ -113,7 +128,7 @@ void AES::SubBytes(std::vector<unsigned char> &target)
 {
     for (int i = 0; i < 4 * Nb; i++)
     {
-        target[i] = _SBox[i];
+        target[i] = _SBox[target[i]];
     }
     
 }
