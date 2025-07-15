@@ -5,33 +5,30 @@ using namespace MyEasyEncrypt;
 TEST(EncryptTest, KeyExpansion_normal)
 {
   AES a;
-  std::vector<unsigned char> plain = {'1', '2', '3', '4', '5', 
-    '6', '7', '8', '9', '0',
-    'a', 'b', 'c', 'd',
-    'e', 'f'
-  
+  std::vector<unsigned char> plain = {'1', '2', '3', '4', '5',
+                                      '6', '7', '8', '9', '0',
+                                      'a', 'b', 'c', 'd',
+                                      'e', 'f'
+
   };
 
-  std::vector<unsigned char> key = {'1', '2', '3', '4', '5', 
-    '6', '7', '8', '9', '0',
-    'a', 'b', 'c', 'd',
-    'e', 'f'
-  
+  std::vector<unsigned char> key = {'1', '2', '3', '4', '5',
+                                    '6', '7', '8', '9', '0',
+                                    'a', 'b', 'c', 'd',
+                                    'e', 'f'
+
   };
 
   std::vector<unsigned char> ok = {
-    0x95, 0xb0, 0x12, 0xb0, 0xbc, 0x89, 0x8e, 0x5c, 
-    0x37, 0xee, 0xed, 0x65, 0x88, 0x63, 0x5f, 0x09 
-  };
+      0x95, 0xb0, 0x12, 0xb0, 0xbc, 0x89, 0x8e, 0x5c,
+      0x37, 0xee, 0xed, 0x65, 0x88, 0x63, 0x5f, 0x09};
   std::vector<unsigned char> res = a.EncryptECB(plain, key);
 
-
   ASSERT_EQ(ok, res);
-
 }
 
-
-TEST(ECB, OneBlockEncryptVector) {
+TEST(ECB, OneBlockEncryptVector)
+{
   AES aes(AESKeyLength::AES_128);
   std::vector<unsigned char> plain = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55,
                                       0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb,
@@ -46,6 +43,3 @@ TEST(ECB, OneBlockEncryptVector) {
 
   ASSERT_EQ(right, out);
 }
-
-
-
