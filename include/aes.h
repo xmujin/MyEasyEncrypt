@@ -27,21 +27,32 @@ namespace MyEasyEncrypt
     {
 
     public:
-        explicit AES(const AESKeyLength keyLength = AESKeyLength::AES_128);
+        explicit AES(const AESKeyLength keyLength = AESKeyLength::AES_128, const FillMode fillMode = FillMode::ZERO);
         
+        AES(const AES&) = delete;
+        AES(const AES&&) = delete;
+        AES& operator=(const AES&) = delete;
+        ~AES() {}
 
         /**
-         * @brief 通过ECB进行加密
+         * @brief 使用ECB进行加密，单位为一个块（16字节）
          * @param plain 明文
          * @param key 密钥
          * @return std::vector<unsigned char> 返回已加密报文
          */
-        std::vector<unsigned char> EncryptECB(std::vector<unsigned char> plain, std::vector<unsigned char> key);
+        std::vector<unsigned char> EncryptBlockByECB(const std::vector<unsigned char>& plain, const std::vector<unsigned char>& key);
+
+        
+        std::vector<unsigned char> EncryptByECB(const std::vector<unsigned char>& plain, const std::vector<unsigned char>& key);
 
 
+    private:
 
-    public:
-        void expansion(); // 填充明文
+        unsigned int Nr; // 加密轮数(128位为10轮)
+        unsigned int Nk; // 密钥字数(32位bit/字)
+        unsigned int Nb; // 状态(分组)字数(32位bit/字)
+        std::vector<std::vector<int>> myVector;
+        // void expansion(); // 填充明文
 
         // 轮常量
         static constexpr unsigned char _Recon128[] = {
@@ -84,11 +95,6 @@ namespace MyEasyEncrypt
             0x03, 0x01, 0x01, 0x02
         }; // 列混合矩阵
 
-        unsigned int Nr; // 加密轮数(128位为10轮)
-        unsigned int Nk; // 密钥字数(32位bit/字)
-        unsigned int Nb; // 状态(分组)字数(32位bit/字)
-
-        std::vector<std::vector<int>> myVector;
 
         
         /**

@@ -5,7 +5,7 @@ using namespace MyEasyEncrypt;
 
 
 
-AES::AES(const AESKeyLength keyLength)
+AES::AES(const AESKeyLength keyLength, const FillMode fillMode)
 {
     switch (keyLength)
     {
@@ -15,6 +15,8 @@ AES::AES(const AESKeyLength keyLength)
         this->Nr = 10; // 10轮加密
         break;
     }
+
+
 }
 
 
@@ -93,12 +95,18 @@ unsigned char AES::xtime(const unsigned char &a)
 }
 
 
-std::vector<unsigned char> AES::EncryptECB(std::vector<unsigned char> plain, std::vector<unsigned char> key)
+std::vector<unsigned char> AES::EncryptBlockByECB(const std::vector<unsigned char>& plain, const std::vector<unsigned char>& key)
 {
     int round;
+
+    std::vector<unsigned char> keyCopy(key.size());
+    keyCopy.assign(key.begin(), key.end());
+
+
+
     std::vector<unsigned char> c = AddRoundKey(plain, key);
     // 对密钥进行扩展
-    KeyExpansion(key);
+    KeyExpansion(keyCopy);
     std::vector<unsigned char> curRound(4 * Nk);
     // 进行九轮循环
     for (round = 1; round <= Nr - 1; round++)
@@ -107,7 +115,7 @@ std::vector<unsigned char> AES::EncryptECB(std::vector<unsigned char> plain, std
         ShiftRows(c); // 行移位
         MixColumns(c); // 列混合
         
-        auto start = key.begin() + 4 * Nk * round; // 排除原始密钥
+        auto start = keyCopy.begin() + 4 * Nk * round; // 排除原始密钥
         auto end   = start + 4 * Nk;
         curRound.assign(start, end);
         c = AddRoundKey(c, curRound);
@@ -116,7 +124,7 @@ std::vector<unsigned char> AES::EncryptECB(std::vector<unsigned char> plain, std
     SubBytes(c); // 字节代换
     ShiftRows(c); // 行移位
     assert(round == 10);
-    auto start = key.begin() + 4 * Nk * round; // 排除原始密钥
+    auto start = keyCopy.begin() + 4 * Nk * round; // 排除原始密钥
     auto end   = start + 4 * Nk;
     curRound.assign(start, end);
     c = AddRoundKey(c, curRound);
@@ -178,4 +186,35 @@ void AES::MixColumns(std::vector<unsigned char> &target)
         target[i * Nb + 2] = s0 ^ s1 ^ xtime(s2) ^ xtime(s3) ^ s3;
         target[i * Nb + 3] = xtime(s0) ^ s0 ^ s1 ^ s2 ^ xtime(s3);
     }
+}
+
+
+
+std::vector<unsigned char> AES::EncryptByECB(const std::vector<unsigned char>& plain, const std::vector<unsigned char>& key)
+{
+    std::vector<unsigned char> plainCopy;
+    plainCopy.assign(plain.begin(), plain.end());
+    std::vector<unsigned char> res(plain.size());
+    int blocks = plain.size() / 16;
+    int leave = plain.size() % 16;
+    if(leave != 0)
+    {
+        plainCopy.resize(plain.size() + 16);
+        res.resize(plainCopy.size());
+        ++blocks;
+    }
+    int index = 0;
+    for (int i = 0; i < blocks; i++)
+    {
+        std::vector<unsigned char> plainSingle(16);
+        auto s = plainCopy.begin() + 16 * i;
+        auto e = s + 16;
+        plainSingle.assign(s, e);
+        auto t = EncryptBlockByECB(plainSingle, key);
+        for(auto v : t)
+        {
+            res[index++] = v;
+        }
+    }
+    return res;
 }
