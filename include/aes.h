@@ -19,8 +19,8 @@ namespace MyEasyEncrypt
         PKCS7,     // 以缺少的字节数填充每个字节
         ZERO,      // 缺少的字节以0填充
         ANSI923,   // 最后字节填充缺少的字节数，其余填充0
-        ISO7816_4, // 填充第一字节位0x80,剩下填充另
-        ISO10126   // 最后字节填充缺少的字节数，其余填充随机字节
+        ISO7816_4, // 填充第一字节位0x80,剩下填充0
+        ISO10126   // Todo 最后字节填充缺少的字节数，其余填充随机字节
     };
 
     class AES
@@ -51,8 +51,9 @@ namespace MyEasyEncrypt
         unsigned int Nr; // 加密轮数(128位为10轮)
         unsigned int Nk; // 密钥字数(32位bit/字)
         unsigned int Nb; // 状态(分组)字数(32位bit/字)
+        FillMode _fillMode;
         std::vector<std::vector<int>> myVector;
-        // void expansion(); // 填充明文
+        std::vector<unsigned char> Expansion(const std::vector<unsigned char>& plain); // 填充明文
 
         // 轮常量
         static constexpr unsigned char _Recon128[] = {

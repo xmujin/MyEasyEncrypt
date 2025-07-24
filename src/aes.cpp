@@ -5,7 +5,7 @@ using namespace MyEasyEncrypt;
 
 
 
-AES::AES(const AESKeyLength keyLength, const FillMode fillMode)
+AES::AES(const AESKeyLength keyLength, const FillMode fillMode) : _fillMode(fillMode)
 {
     switch (keyLength)
     {
@@ -192,29 +192,81 @@ void AES::MixColumns(std::vector<unsigned char> &target)
 
 std::vector<unsigned char> AES::EncryptByECB(const std::vector<unsigned char>& plain, const std::vector<unsigned char>& key)
 {
-    std::vector<unsigned char> plainCopy;
-    plainCopy.assign(plain.begin(), plain.end());
-    std::vector<unsigned char> res(plain.size());
-    int blocks = plain.size() / 16;
-    int leave = plain.size() % 16;
-    if(leave != 0)
-    {
-        plainCopy.resize(plain.size() + 16);
-        res.resize(plainCopy.size());
-        ++blocks;
-    }
+    std::vector<unsigned char> plainCopy = Expansion(plain);
+    std::vector<unsigned char> res(plainCopy.size());
     int index = 0;
-    for (int i = 0; i < blocks; i++)
+    for (int i = 0; i < plainCopy.size() / 16; i++)
     {
         std::vector<unsigned char> plainSingle(16);
         auto s = plainCopy.begin() + 16 * i;
         auto e = s + 16;
         plainSingle.assign(s, e);
         auto t = EncryptBlockByECB(plainSingle, key);
+        
         for(auto v : t)
         {
             res[index++] = v;
         }
     }
     return res;
+}
+
+
+std::vector<unsigned char> AES::Expansion(const std::vector<unsigned char>& plain)
+{
+    int blocks, leave;
+    std::vector<unsigned char> res;
+    leave = plain.size() % 16;
+    blocks = (plain.size() + 16 - 1) / 16;
+    res.assign(plain.begin(), plain.end());
+    assert(res.size() == blocks * 16);
+    res.resize(blocks * 16);
+    if(_fillMode == FillMode::ZERO && leave != 0)
+    {
+        for (auto i = res.begin() + plain.size(); i < res.end(); i++)
+        {
+            *i = 0;
+        }
+    }
+    else if(_fillMode == FillMode::PKCS7)
+    {
+        if(leave == 0)
+        {
+            res.resize(plain.size() + 16);
+        }
+        else
+        {
+            for (auto i = res.begin() + plain.size(); i < res.end(); i++)
+            {
+                *i = 16 - leave;
+            }
+        }
+    }
+    else if(_fillMode == FillMode::ANSI923 && leave != 0)
+    {
+        for (auto i = res.begin() + plain.size(); i != res.end(); i++)
+        {
+            *i = 0;
+            if(i == res.end() - 1)
+            {
+                *i = 16 - leave;
+            }
+        }
+        
+    }
+    else if(_fillMode == FillMode::ANSI923 && leave != 0)
+    {
+        for (auto i = res.begin() + plain.size(); i != res.end(); i++)
+        {
+            *i = 0;
+            if(i == res.end() - 1)
+            {
+                *i = 0x80;
+            }
+        }
+    }
+    return res;
+    
+    
+
 }
