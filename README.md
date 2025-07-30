@@ -106,7 +106,7 @@ $$
 	\hline 2 & 6 & 0 & d \\
 	\hline 3 & 7 & a & e \\
 	\hline 4 & 8 & b & f \\
-	\hline
+	\hline \\
 \end{array}
 =>
 \begin{array}{|c|c|c|c|}
@@ -114,7 +114,7 @@ $$
 	\hline 6 & 0 & d & 2 \\
 	\hline a & e & 3 & 7 \\ 
 	\hline f & 4 & 8 & b \\
-	\hline
+	\hline \\
 \end{array}
 $$
 
