@@ -77,7 +77,7 @@ $$
 	\hline ab \\
 	\hline 76 \\
 	\hline fe \\
-	\hline
+	\hline \\
 \end{array}
 ⊕
 \begin{array}{|c|}
@@ -86,9 +86,8 @@ $$
 	\hline 00 \\
 	\hline 00 \\
 	\hline 00 \\
-	\hline
+	\hline \\
 \end{array}
-
 $$
 
 ## 二、加密步骤
