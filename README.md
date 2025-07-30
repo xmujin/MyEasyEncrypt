@@ -7,5 +7,11 @@
 最开始有一个4 * 4 = 16字节的密钥矩阵，扩展十次再加上原始的密钥矩阵总共：16 * 10 + 16 = 176字节。
 
 $$
-\begin{array}{|c|c|c|}    \hline 1&5&9 & 13\\    \hline 2&6&10 & 14\\    \hline 3&7&11 & 15\\    \hline 4&8&12 & 16\\    \hline\end{array}=>\begin{array}{|c|c|c|}    \hline 1&5&9 & 13\\    \hline 6&10 & 14 &2\\    \hline 11 & 15& 3&7\\    \hline 16 & 4&8&12\\    \hline\end{array}
+\begin{array}{|c|c|c|}
+	\hline 1&5&9 & 13\\
+	\hline 2&6&10 & 14\\
+	\hline 3&7&11 & 15\\
+	\hline 4&8&12 & 16\\
+	\hline
+\end{array}
 $$
