@@ -29,27 +29,142 @@ $$
 $$
 \begin{array}{|c|}
     \hline w[n]\\
-	\hline 1 \\
-	\hline 2 \\
-	\hline 3 \\
-	\hline 4 \\
+	\hline c \\
+	\hline d \\
+	\hline e \\
+	\hline f \\
 	\hline
 \end{array}
  =>
 \begin{array}{|c|}
     \hline w[n]\\
-	\hline 2 \\
-	\hline 3 \\
-	\hline 4 \\
-	\hline 1 \\
+	\hline d \\
+	\hline e \\
+	\hline f \\
+	\hline c \\
 	\hline
 \end{array}
 $$
 
-字节代换:对字节循环的结果通过SBOX进行字节代换。
+字节代换:对字节循环的结果通过SBOX进行字节代换。例如该字节如果为0x12，则找到[`Sbox表`](#sbox表)中的第1行第2列中的字节0xc9进行替换，实际编程时通过sbox[0x12]进行获取。
+
+$$
+\begin{array}{|c|}
+    \hline w[n]\\
+	\hline d \\
+	\hline e \\
+	\hline f \\
+	\hline c \\
+	\hline
+\end{array}
+ =>
+\begin{array}{|c|}
+    \hline w[n]\\
+	\hline d7 \\
+	\hline ab \\
+	\hline 76 \\
+	\hline fe \\
+	\hline
+\end{array}
+$$
+
+轮常量异或：将字节代换后的结果与轮常量进行异或。如果是第1轮的密钥扩展，则使用第1列的Rcon中的轮常量。
+
+$$
+\begin{array}{|c|}
+    \hline w[n]\\
+	\hline d7 \\
+	\hline ab \\
+	\hline 76 \\
+	\hline fe \\
+	\hline
+\end{array}
+⊕
+
+\begin{array}{|c|}
+    \hline w[n]\\
+	\hline 01 \\
+	\hline 00 \\
+	\hline 00 \\
+	\hline 00 \\
+	\hline
+\end{array}
+
+$$
+
+## 二、加密步骤
+### 1. 初始变换
+将原始密文和第0轮的密钥(即原始密钥，第1轮密钥为扩展后的密钥)进行异或。
+### 2. 9轮循环运算
+9轮循环运算包括
+#### (1) 字节代换(SubBytes)
+使用[`Sbox表`](#sbox表)进行字节代换、行移位、列混合、轮密钥加，需要依次进行。
+#### (2) 行移位(ShiftRows)
+第1行保持不变，第2行左移1个字节，第3行左移2个字节，第3行左移3个字节。
+
+$$
+\begin{array}{|c|c|c|c|}
+	\hline 1 & 5 & 9 & c \\
+	\hline 2 & 6 & 0 & d \\
+	\hline 3 & 7 & a & e \\
+	\hline 4 & 8 & b & f \\
+	\hline
+\end{array}
+=>
+\begin{array}{|c|c|c|c|}
+	\hline 1 & 5 & 9 & c \\
+	\hline 6 & 0 & d & 2 \\
+	\hline a & e & 3 & 7 \\ 
+	\hline f & 4 & 8 & b \\
+	\hline
+\end{array}
+$$
 
 
 
+
+
+#### (3) 列混合(MixColumns)
+将矩阵左乘一个Mix矩阵。
+在这里的左乘和矩阵运算有区别。
+- 如果左乘0x01，则不变
+- 如果左乘0x02，如果最高位为0，则左移一位，最高位为1，则左移一位并与0x1b进行异或。
+- 如果左乘0x03，则相当于左乘0x02再与其进行异或。
+
+$$
+\begin{bmatrix}
+S'_{0,0} & S'_{0,1} & S'_{0,2} & S'_{0,3} \\
+S'_{1,0} & S'_{1,1} & S'_{1,2} & S'_{1,3} \\
+S'_{2,0} & S'_{2,1} & S'_{2,2} & S'_{2,3} \\
+S'_{3,0} & S'_{3,1} & S'_{3,2} & S'_{3,3} \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+02 & 03 & 01 & 01 \\
+01 & 02 & 03 & 01 \\
+01 & 01 & 02 & 03 \\
+03 & 01 & 01 & 02 \\
+\end{bmatrix}
+\begin{bmatrix}
+S_{0,0} & S_{0,1} & S_{0,2} & S_{0,3} \\
+S_{1,0} & S_{1,1} & S_{1,2} & S_{1,3} \\
+S_{2,0} & S_{2,1} & S_{2,2} & S_{2,3} \\
+S_{3,0} & S_{3,1} & S_{3,2} & S_{3,3} \\
+\end{bmatrix}
+$$
+
+$$
+S'_{0,j}=(2 * S_{0,j})⊕(3 * S_{1,j})⊕S_{2,j}⊕S_{3,j} \\
+S'_{1,j}=S_{0,j}⊕(2 * S_{1,j})⊕(3 * S_{2,j})⊕S_{3,j} \\
+S'_{2,j}=S_{0,j}⊕S_{1,j}⊕(2 * S_{2,j})⊕(3 * S_{3,j}) \\
+S'_{3,j}=(3 * S_{0,j})⊕S_{1,j}⊕S_{2,j}⊕(2 * S_{3,j}) \\
+$$
+#### (4) 轮密钥加(AddRoundKey)
+将列混合得到的矩阵和轮密钥进行异或
+### 3. 1轮最终轮运算
+与9轮循环运算少了一个列混合，其余步骤相同。
+### 4. 得到密文
+最终得到了密文
 
 
 ## 附录
@@ -78,6 +193,26 @@ $$
 \end{array}
 $$
 
+### Rcon表(轮常量表)
+$$
+\begin{array}{|c|c|c|c|c|c|c|c|c|c|}
+	\hline 01 & 02 & 04 & 08 & 10 & 20 & 40 & 80 & 1b & 36 \\
+	\hline 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+	\hline 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+	\hline 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 & 00 \\
+	\hline
+\end{array}
+$$
 
+### Mix表(列混合表)
 
+$$
+\begin{array}{|c|c|c|c|}
+\hline 02 & 03 & 01 & 01 \\
+\hline 01 & 02 & 03 & 01 \\
+\hline 01 & 01 & 02 & 03 \\
+\hline 03 & 01 & 01 & 02 \\
+\hline
+\end{array}
+$$
 
