@@ -13,10 +13,12 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC 
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/abseil-cpp/absl>
+    # PRIVATE
+    #     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+add_subdirectory(abseil-cpp)
 
 if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
   enable_testing()

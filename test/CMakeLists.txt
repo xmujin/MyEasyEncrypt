@@ -14,6 +14,7 @@ target_link_libraries(
     PUBLIC
         GTest::GTest
         ${CMAKE_PROJECT_NAME}
+        absl::str_format
 )
 
 

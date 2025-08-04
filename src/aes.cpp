@@ -21,7 +21,8 @@ const unsigned char AES::_Recon128[] = {
     0x36, 0x00, 0x00, 0x00,
 };
 
-const unsigned char AES::_SBox[] = {
+const unsigned char AES::_SBox[] = 
+{
     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
     0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
     0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
@@ -41,6 +42,27 @@ const unsigned char AES::_SBox[] = {
 };
 
 
+const unsigned char AES::_Inv_SBox[] = 
+{
+    0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB,
+    0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87, 0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB,
+    0x54, 0x7B, 0x94, 0x32, 0xA6, 0xC2, 0x23, 0x3D, 0xEE, 0x4C, 0x95, 0x0B, 0x42, 0xFA, 0xC3, 0x4E,
+    0x08, 0x2E, 0xA1, 0x66, 0x28, 0xD9, 0x24, 0xB2, 0x76, 0x5B, 0xA2, 0x49, 0x6D, 0x8B, 0xD1, 0x25,
+    0x72, 0xF8, 0xF6, 0x64, 0x86, 0x68, 0x98, 0x16, 0xD4, 0xA4, 0x5C, 0xCC, 0x5D, 0x65, 0xB6, 0x92,
+    0x6C, 0x70, 0x48, 0x50, 0xFD, 0xED, 0xB9, 0xDA, 0x5E, 0x15, 0x46, 0x57, 0xA7, 0x8D, 0x9D, 0x84,
+    0x90, 0xD8, 0xAB, 0x00, 0x8C, 0xBC, 0xD3, 0x0A, 0xF7, 0xE4, 0x58, 0x05, 0xB8, 0xB3, 0x45, 0x06,
+    0xD0, 0x2C, 0x1E, 0x8F, 0xCA, 0x3F, 0x0F, 0x02, 0xC1, 0xAF, 0xBD, 0x03, 0x01, 0x13, 0x8A, 0x6B,
+    0x3A, 0x91, 0x11, 0x41, 0x4F, 0x67, 0xDC, 0xEA, 0x97, 0xF2, 0xCF, 0xCE, 0xF0, 0xB4, 0xE6, 0x73,
+    0x96, 0xAC, 0x74, 0x22, 0xE7, 0xAD, 0x35, 0x85, 0xE2, 0xF9, 0x37, 0xE8, 0x1C, 0x75, 0xDF, 0x6E,
+    0x47, 0xF1, 0x1A, 0x71, 0x1D, 0x29, 0xC5, 0x89, 0x6F, 0xB7, 0x62, 0x0E, 0xAA, 0x18, 0xBE, 0x1B,
+    0xFC, 0x56, 0x3E, 0x4B, 0xC6, 0xD2, 0x79, 0x20, 0x9A, 0xDB, 0xC0, 0xFE, 0x78, 0xCD, 0x5A, 0xF4,
+    0x1F, 0xDD, 0xA8, 0x33, 0x88, 0x07, 0xC7, 0x31, 0xB1, 0x12, 0x10, 0x59, 0x27, 0x80, 0xEC, 0x5F,
+    0x60, 0x51, 0x7F, 0xA9, 0x19, 0xB5, 0x4A, 0x0D, 0x2D, 0xE5, 0x7A, 0x9F, 0x93, 0xC9, 0x9C, 0xEF,
+    0xA0, 0xE0, 0x3B, 0x4D, 0xAE, 0x2A, 0xF5, 0xB0, 0xC8, 0xEB, 0xBB, 0x3C, 0x83, 0x53, 0x99, 0x61,
+    0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D
+};
+
+
 const unsigned char AES::_Mix[] = {
     0x02, 0x03, 0x01, 0x01,
     0x01, 0x02, 0x03, 0x01,
@@ -48,7 +70,12 @@ const unsigned char AES::_Mix[] = {
     0x03, 0x01, 0x01, 0x02
 }; // 列混合矩阵
 
-
+const unsigned char AES::_Inv_Mix[] = {
+    0x0E, 0x0B, 0x0D, 0x09,
+    0x09, 0x0E, 0x0B, 0x0D,
+    0x0D, 0x09, 0x0E, 0x0B,
+    0x0B, 0x0D, 0x09, 0x0E
+}; // 列混合矩阵
 
 AES::AES(const AESKeyLength keyLength, const FillMode fillMode) : _fillMode(fillMode)
 {
@@ -139,6 +166,26 @@ unsigned char AES::xtime(const unsigned char &a)
     return (a << 1) ^ (((a >> 7) & 1) * 0x1b);
 }
 
+unsigned char AES::xtime_mul_9(const unsigned char &a)
+{
+    return xtime(xtime(xtime(a))) ^ a;
+}
+
+// 11
+unsigned char AES::xtime_mul_B(const unsigned char &a)
+{
+    return xtime(xtime(xtime(a))) ^ xtime(a) ^ a;
+}
+
+unsigned char AES::xtime_mul_D(const unsigned char &a)
+{
+    return xtime(xtime(xtime(a))) ^ xtime(xtime(a)) ^ a;
+}
+
+unsigned char AES::xtime_mul_E(const unsigned char &a)
+{
+    return xtime(xtime(xtime(a))) ^ xtime(xtime(a)) ^ xtime(a);
+}
 
 std::vector<unsigned char> AES::EncryptBlockByECB(const std::vector<unsigned char>& plain, const std::vector<unsigned char>& key)
 {
@@ -146,8 +193,6 @@ std::vector<unsigned char> AES::EncryptBlockByECB(const std::vector<unsigned cha
     int round;
     std::vector<unsigned char> keyCopy(key.size());
     keyCopy.assign(key.begin(), key.end());
-
-
 
     std::vector<unsigned char> c = AddRoundKey(plain, key);
     // 对密钥进行扩展
@@ -177,13 +222,95 @@ std::vector<unsigned char> AES::EncryptBlockByECB(const std::vector<unsigned cha
 }
 
 
+std::vector<unsigned char> AES::DecryptBlockByECB(const std::vector<unsigned char>& cipher, const std::vector<unsigned char>& key)
+{
+    CheckKeyLength(key.size());
+    int round;
+    std::vector<unsigned char> res(cipher);
+    std::vector<unsigned char> roundKey(key);
+    KeyExpansion(roundKey);
+    assert(roundKey.size() == 16 * 11);
+    std::vector<unsigned char> block(16);
+    block.assign(roundKey.begin() + 16 * 10, roundKey.end());
+    // 轮密钥加
+    res = AddRoundKey(res, block);
+    // 逆行位移
+    ShiftRows_Inv(res);
+    // 逆字节代换
+    SubBytes_Inv(res);
+
+    for (round = Nr - 1; round >= 1; round--)
+    {
+        auto start = roundKey.begin() + 4 * Nk * round; // 排除原始密钥
+        auto end   = start + 4 * Nk;
+        block.assign(start, end);
+        // 轮密钥加
+        res = AddRoundKey(res, block);
+        // 逆列混淆
+        MixColumns_Inv(res);
+        // 逆行位移
+        ShiftRows_Inv(res);
+        // 逆字节代换
+        SubBytes_Inv(res);
+    }
+    res = AddRoundKey(res, key);
+    return res;
+}
+
+std::vector<unsigned char> AES::DecryptByECB(const std::vector<unsigned char>& cipher, const std::vector<unsigned char>& key)
+{
+    std::vector<unsigned char> block;
+    std::vector<unsigned char> res(cipher.size());
+    int index = 0;
+    for (int i = 0; i < cipher.size() / 16; i++)
+    {
+        auto start = cipher.begin() + 16 * i;
+        auto end = start + 16;
+        block.assign(start, end);
+        assert(block.size() == 16);
+        auto t = DecryptBlockByECB(block,key);
+        assert(t.size() == 16);
+        for (auto i : t)
+        {
+            res[index++] = i;
+        }
+    }
+    return res;
+}
+
+std::string AES::DecryptByECB(const std::string& cipher, const std::string& key)
+{
+    std::string cipherOrigin = _Decode_Base64(cipher);
+    // assert(cipherOrigin.size() == 16);
+
+    std::vector<unsigned char> cipherArray, k, resArray;
+    
+    k.assign(key.begin(), key.end());
+
+    std::string resStr;
+
+    cipherArray.assign(cipherOrigin.begin(), cipherOrigin.end());
+    resArray = DecryptByECB(cipherArray, k);
+    resStr.assign(resArray.begin(), resArray.end());
+    return resStr;
+}
+
+
+
 void AES::SubBytes(std::vector<unsigned char> &target)
 {
     for (int i = 0; i < 4 * Nb; i++)
     {
         target[i] = _SBox[target[i]];
-    }
-    
+    } 
+}
+
+void AES::SubBytes_Inv(std::vector<unsigned char> &target)
+{
+    for (int i = 0; i < 4 * Nb; i++)
+    {
+        target[i] = _Inv_SBox[target[i]];
+    } 
 }
 
 void AES::ShiftRows(std::vector<unsigned char> &target)
@@ -206,6 +333,33 @@ void AES::ShiftRows(std::vector<unsigned char> &target)
     target[11] = target[7];
     target[7] = target[3];
     target[3] = t;
+}
+
+
+void AES::ShiftRows_Inv(std::vector<unsigned char> &target)
+{
+    // 第一行不变
+    // 第二行向右移动1个字节
+    // 0 4 8  12 
+    // 1 5 9  13
+    // 2 6 10 14
+    // 3 7 11 15
+    unsigned char t = target[13];
+    target[13] = target[9];
+    target[9] = target[5];
+    target[5] = target[1];
+    target[1] = t;
+
+    // 第三行向右移动2个字节
+    std::swap(target[2], target[10]);
+    std::swap(target[6], target[14]);
+
+    // 第四行向右移动3个字节(相当于向左移动一个字节)
+    t = target[3];
+    target[3] = target[7];
+    target[7] = target[11];
+    target[11] = target[15];
+    target[15] = t;
 }
 
 
@@ -233,7 +387,25 @@ void AES::MixColumns(std::vector<unsigned char> &target)
     }
 }
 
-
+void AES::MixColumns_Inv(std::vector<unsigned char> &target)
+{
+    // 固定的矩阵，左乘状态数组
+    // 0x0E, 0x0B, 0x0D, 0x09,
+    // 0x09, 0x0E, 0x0B, 0x0D,
+    // 0x0D, 0x09, 0x0E, 0x0B,
+    // 0x0B, 0x0D, 0x09, 0x0E
+    for (int i = 0; i < Nb; i++)
+    {
+        unsigned char s0 = target[i * Nb + 0];
+        unsigned char s1 = target[i * Nb + 1];
+        unsigned char s2 = target[i * Nb + 2];
+        unsigned char s3 = target[i * Nb + 3];
+        target[i * Nb + 0] = xtime_mul_E(s0) ^ xtime_mul_B(s1) ^ xtime_mul_D(s2) ^ xtime_mul_9(s3);
+        target[i * Nb + 1] = xtime_mul_9(s0) ^ xtime_mul_E(s1) ^ xtime_mul_B(s2) ^ xtime_mul_D(s3);
+        target[i * Nb + 2] = xtime_mul_D(s0) ^ xtime_mul_9(s1) ^ xtime_mul_E(s2) ^ xtime_mul_B(s3);
+        target[i * Nb + 3] = xtime_mul_B(s0) ^ xtime_mul_D(s1) ^ xtime_mul_9(s2) ^ xtime_mul_E(s3);
+    }
+}
 
 std::vector<unsigned char> AES::EncryptByECB(const std::vector<unsigned char>& plain, const std::vector<unsigned char>& key)
 {
@@ -361,6 +533,33 @@ std::string AES::_Encode_Base64(const std::string& str)
     while (res.size() % 4) // 不为4的倍数时则填充=
     {
         res.push_back('=');
+    }
+    return res;
+}
+
+
+std::string AES::_Decode_Base64(const std::string& str)
+{
+
+    std::string strCopy(str);
+    std::string res;
+    // 删除=号
+    while(!strCopy.empty() && strCopy.back() == '=')
+    {
+        strCopy.pop_back();
+    }
+
+    int value = 0;
+    int valueBuffer = -8;
+    for (auto c : strCopy)
+    {
+        value = (value << 6) + base64_chars.find(c);
+        valueBuffer += 6;
+        while(valueBuffer >= 0)
+        {
+            res.push_back((char)((value >> valueBuffer) & 0xFF));
+            valueBuffer -= 8;
+        }
     }
     return res;
 }
