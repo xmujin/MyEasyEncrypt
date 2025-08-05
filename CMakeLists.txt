@@ -13,9 +13,6 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC 
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/abseil-cpp/absl>
-    # PRIVATE
-    #     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 add_subdirectory(abseil-cpp)
@@ -25,3 +22,11 @@ if(${PROJECT_NAME}_ENABLE_UNIT_TESTING)
   message(STATUS "为这个项目构建单元测试. 测试应当在test文件夹下\n")
   add_subdirectory(test)
 endif()
+
+include(GNUInstallDirs)
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
